@@ -8,13 +8,14 @@ authors = [
     "Ирина Финатова", "Юлий Митряшкин", "Яна Денисова"
 ]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 python-dotenv = "^0.21.0"
 python-telegram-bot = "20.0b0"
 pydantic = {extras = ["email"], version = "^1.10.6"}
-email-validate = "^1.1.2"
+py3-validate-email = "1.0.5.post2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.20.0"
