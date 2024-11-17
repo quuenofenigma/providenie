@@ -16,7 +16,7 @@ from bot.constants.info.text import (
 class BaseForm(BaseModel):
     """Base model for forms."""
 
-    class Config:
+    class Config:  # noqa: D106
         min_anystr_length = 1
         max_anystr_length = 4096
         validate_assignment = True
@@ -31,7 +31,8 @@ class ShortForm(BaseForm):
     email: Optional[EmailStr]
 
     @validator('email')
-    def validator_email(cls, email):
+    def validator_email(cls, email: EmailStr) -> EmailStr:  # noqa: N805
+        """Email verification."""
         validate_email_or_fail(
             email_address=email,
             check_blacklist=False,
@@ -49,11 +50,13 @@ class VolunteerForm(ShortForm):
     volunteer_time: str = Field(None, regex=REGEX_NON_LATIN)
 
     @validator('birthday', pre=True)
-    def parse_birthday(cls, value):
+    def parse_birthday(cls, value: str) -> datetime:  # noqa: N805
+        """Parse strint to datetime."""
         return datetime.strptime(value, '%d.%m.%Y')
 
     @validator('birthday')
-    def validate_birthday(cls, value):
+    def validate_birthday(cls, value: datetime) -> str:  # noqa: N805
+        """Check the date of birth."""
         today = datetime.today()
         age = (
             today.year
@@ -90,7 +93,8 @@ class LongForm(BaseForm):
     where_got_info: str = Field(None, regex=REGEX_NON_LATIN)
 
     @validator('email')
-    def validator_email(cls, email):
+    def validator_email(cls, email: EmailStr) -> EmailStr:  # noqa: N805
+        """Email verification."""
         validate_email_or_fail(
             email_address=email,
             check_blacklist=False,
@@ -99,11 +103,13 @@ class LongForm(BaseForm):
         return email
 
     @validator('child_birthday', pre=True)
-    def parse_child_birthday(cls, value):
+    def parse_birthday(cls, value: str) -> datetime:  # noqa: N805
+        """Parse strint to datetime."""
         return datetime.strptime(value, '%d.%m.%Y')
 
     @validator('child_birthday')
-    def validate_birthday(cls, value):
+    def validate_birthday(cls, value: datetime) -> str:  # noqa: N805
+        """Check the date of birth."""
         today = datetime.today()
         age = (
             today.year
@@ -143,7 +149,8 @@ class FundForm(LongForm):
     another_fund_member: str = Field(None, regex=REGEX_NON_LATIN)
 
     @root_validator
-    def order_fields(cls, values):
+    def order_fields(cls, values: dict) -> dict:  # noqa: N805
+        """Make ordering fields dict."""
         return {
             field_name: values.get(field_name)
             for field_name in FUND_FIELDS_ORDER

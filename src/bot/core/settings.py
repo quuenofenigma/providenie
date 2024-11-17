@@ -2,6 +2,8 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
+    """Model application settings."""
+
     telegram_token: str
 
     log_level: str = 'INFO'
@@ -17,7 +19,7 @@ class Settings(BaseSettings):
 
     email_curator: str = ''
 
-    class Config:
+    class Config:  # noqa: D106
         env_file = '.env'
         env_file_encoding = 'utf-8'
 
