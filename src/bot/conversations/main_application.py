@@ -1,6 +1,5 @@
-from telegram import BotCommandScopeChat
+from telegram import BotCommandScopeChat, Update
 from telegram import InlineKeyboardMarkup as Keyboard
-from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot.constants import button, state
@@ -10,14 +9,14 @@ from bot.core.logger import logger  # noqa
 from bot.utils import get_menu_buttons, send_message
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Send a welcome message to the user."""
     await send_message(update, text.START, link_preview=False)
 
     return await main_menu(update, context)
 
 
-async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show the main menu to the user and set the bot's commands."""
     await context.bot.set_my_commands(
         [button.START_CMD, button.STOP_CMD],
@@ -26,7 +25,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_message(
         update,
         text.MAIN_MENU,
-        keyboard=Keyboard([*get_menu_buttons(ALL_MENU)])
+        keyboard=Keyboard([*get_menu_buttons(ALL_MENU)]),
     )
 
     return state.MAIN_MENU

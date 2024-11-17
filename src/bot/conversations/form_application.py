@@ -15,8 +15,11 @@ from bot.core.settings import settings
 from bot.utils import send_email_message, send_message
 
 
-async def start_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Initializes the user's form data and asks for input."""
+async def start_form(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> int:
+    """Init the user's form data and asks for input."""
     user_data = context.user_data
     await context.bot.set_my_commands(
         [button.MENU_CMD, button.CANCEL_CMD, button.START_CMD],
@@ -37,7 +40,7 @@ async def start_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await ask_input(update, context)
 
 
-async def ask_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def ask_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Ask the user for input related to the current form field."""
     callback = update.callback_query
     user_data = context.user_data
@@ -57,18 +60,21 @@ async def ask_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return state.FORM_INPUT
 
 
-async def save_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def save_input(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+) -> int:
     """Save the user's input for the current form field."""
     user_data = context.user_data
     form = user_data[key.FORM]
     fields = form[key.FIELDS]
-    input = update.message.text.strip()
+    input_text = update.message.text.strip()
 
     field = form.get(key.FIELD_EDIT)
     if not field:
         field = fields[form[key.FIELD_INDEX]]
     try:
-        setattr(form[key.DATA], field, input)
+        setattr(form[key.DATA], field, input_text)
     except (ValidationError, EmailValidationError) as error:
         error_message = (
             text.VALIDATION_ERROR.format(
@@ -93,7 +99,7 @@ async def save_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return await ask_input(update, context)
 
 
-async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Show the completed form data to the user."""
     user_data = context.user_data
     info = user_data[key.MENU]
@@ -125,13 +131,13 @@ async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await send_message(update, message, keyboard=keyboard)
     logging.info(
-        f'User filled out the form for "{user_data[key.MENU][key.NAME]}".'
+        f'User filled out the form for "{user_data[key.MENU][key.NAME]}".',
     )
 
     return state.FORM_SUBMISSION
 
 
-async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Display the edit menu to the user."""
     user_data = context.user_data
     fields = user_data[key.FORM][key.FIELDS]
@@ -154,7 +160,7 @@ async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return state.FORM_INPUT
 
 
-async def send_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def send_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Send form data to the specified curator email-address."""
     user_data = context.user_data
     form = user_data[key.FORM]
@@ -168,7 +174,7 @@ async def send_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
         subject = f'Анкета_{info.get(key.NAME)}'
 
     logging.info(
-        f'Form for "{user_data[key.MENU][key.NAME]}" is completed and sent.'
+        f'Form for "{user_data[key.MENU][key.NAME]}" is completed and sent.',
     )
     curators = settings.email_curator.split(',')
     if all(
