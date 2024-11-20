@@ -14,8 +14,7 @@ services:
 
   db:
     env_file:
-      - path: ./src/.env
-        required: true
+      - ./src/.env
     image: postgres:17-alpine
     volumes:
       - db_data:/var/lib/postgresql/data
